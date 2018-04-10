@@ -13,7 +13,7 @@ CURRENTDIR = os.path.dirname(os.path.realpath(__file__))
 def getRandomPort():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
-        port = random.randint(1, 65535)
+        port = random.randint(1024, 65535)
         try:
             s.bind(("127.0.0.1", port)) # test if port is in use
         except socket.error:
