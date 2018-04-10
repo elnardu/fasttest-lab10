@@ -6,6 +6,7 @@ import random
 import socket
 import difflib
 import os
+import sys
 
 CURRENTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -24,8 +25,16 @@ def getRandomPort():
 
 def runTest(testNum, q, orgOutput):
     port = getRandomPort()
-    testPs = subprocess.Popen("{}/test-server{}.sh ./ServerIRC {}".format(CURRENTDIR, testNum, port),
+    try:
+        testPs = subprocess.Popen("{}/test-server{}.sh ./ServerIRC {}".format(CURRENTDIR, testNum, port),
                            shell=True, stdout=subprocess.PIPE)
+    except Exception as e:
+        print("Cannot start new process")
+        print(e)
+        q.put((testNum, False, 'TEST RUN FAILED'))
+        sys.exit(1)
+        return
+
     testPs.wait()
 
     print("TEST {} DONE".format(testNum))
@@ -85,6 +94,10 @@ def main():
         results[res[0]] = res[1:]
 
     printResults(results)
+
+    subprocess.call(
+        "kill -9 `ps | grep ServerIRC | awk '{ print $1;}'`", shell=True)
+    
 
 
 # Output of the original program
